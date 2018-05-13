@@ -26,6 +26,11 @@
     },
     "android": {
       "package": "com.ecl.voiceConversion"
+    },
+    "isDetached": true,
+    "detach": {
+      "scheme": "expda27a2e0c04f4ac59f31cb71b5ef99d6",
+      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.4.0-sdk26.0.0-e63d9209-070c-4118-b06b-c60e82da0b66.tar.gz"
     }
   }
 }

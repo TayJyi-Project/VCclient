@@ -8,17 +8,7 @@ import styles from "./styles"
 
 let uuid = require("uuid/v4")
 const serverUrl = "http://140.123.97.163:5001"
-/*
-const firebaseConfig = {
-    apiKey: "AIzaSyBNDrBswTJ0ed30-a5xBBaZ8alp1gq-788",
-    authDomain: "ecl-voice.firebaseapp.com",
-    databaseURL: "https://ecl-voice.firebaseio.com",
-    projectId: "ecl-voice",
-    storageBucket: "ecl-voice.appspot.com",
-    messagingSenderId: "741647084768"
-}
-firebase.initializeApp(firebaseConfig)
-*/
+
 class Yei extends Component {
     constructor() {
         super()
