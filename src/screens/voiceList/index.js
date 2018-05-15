@@ -15,10 +15,10 @@ class voiceList extends Component {
     }
 
     async componentWillMount() {
-        await this.loadData()
     }
 
     async componentDidMount() {
+        await this.loadData()
     }
 
     async loadData() {

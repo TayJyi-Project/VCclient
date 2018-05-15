@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import { AsyncStorage } from "react-native"
 import { Body, Left, Right, Container, Header, Button, Icon, View, Content, Text, Title, Card, CardItem, Toast } from "native-base"
 //import RNFetchBlob from 'react-native-fetch-blob'
-import { Audio, FileSystem, Asset } from "expo"
+import { Audio } from "expo"
 import styles from "./styles"
 
 const serverUrl = "http://140.123.97.163:5001"
@@ -11,6 +11,7 @@ class convert extends Component {
     constructor() {
         super()
         this.state = {
+            uid: "",
             loading: false,
             recording: false,
             item: {
@@ -39,7 +40,7 @@ class convert extends Component {
             let result = JSON.parse(await AsyncStorage.getItem(list[type]))
             //console.log(type, index, result)
             this.state.item = result[index]
-            this.state.userId = await AsyncStorage.getItem("@uid")
+            this.state.uid = await AsyncStorage.getItem("@uid")
         } catch (err) {
             console.log("componentDidMount", err)
         }
@@ -85,7 +86,6 @@ class convert extends Component {
             } else {
                 await this.soundObject.stopAsync()
             }
-            //await this.soundObject.unloadAsync();
         } catch (err) {
             console.log("playSound", err)
         }
@@ -120,23 +120,16 @@ class convert extends Component {
 
             const uri = this.record.getURI()
             const data = new FormData()
-            let metadata = {
-                part_content_type: "audio/wav;rate=22050"
-            }
-            data.append("metadata", JSON.stringify(metadata))
-            data.append("uid", this.state.userId)
+            data.append("uid", this.state.uid)
             data.append("tid", this.state.item.tid)
             data.append("file", {
                 uri: uri,
-                type: "audio/x-wav",
+                type: "audio/wav",
                 name: "convert.wav"
             })
-            //const response = await fetch(`${serverUrl}/convert`, { method: "post", body: data })
-            let response = await fetch(`${serverUrl}/convert`, { method: "post", body: data })
-            let fileID = await response.text()
+            const response = await fetch(`${serverUrl}/convert`, { method: "post", body: data })
+            const fileID = await response.text()
             console.log("fileID", fileID)
-            //let file = await FileSystem.downloadAsync(`${serverUrl}/download/${fileID}`, FileSystem.documentDirectory + "result.wav")
-            //console.log(file)
 
             await this.setupSound({uri: `${serverUrl}/download?filename=${fileID}`, overrideFileExtensionAndroid: true})
             await this.playSound()
@@ -161,7 +154,7 @@ class convert extends Component {
 
             <Content padder>
                 <Body>
-                    <Text style={[styles.centerText, { fontSize: 20, marginTop: 170, textDecorationLine: "underline" }]}> {this.state.item.title} </Text>
+                    <Text style={[styles.centerText, { fontSize: 20, marginTop: 70, textDecorationLine: "underline" }]}> {this.state.item.title} </Text>
                     <Text style={[styles.centerText, { fontSize: 18, marginTop: 15, color: "grey" }]}>
                         { this.state.recording ? "錄音中" : this.state.loading ? "處理中，請稍後" : "準備就緒" }
                     </Text>
@@ -169,11 +162,8 @@ class convert extends Component {
             </Content>
             <View style={{ position: "absolute", width: "100%", bottom: 10, paddingLeft: 10, paddingRight: 10}}>
                 <View style={{ borderBottomColor: "grey", borderBottomWidth: 1, marginBottom: 30, marginLeft: 10, marginRight: 10 }} />
-                <Button rounded icon
-                    style={ styles.recordBtn }
-                    onPress={() => this.toggleConvert()}
-                >
-                    <Icon type="MaterialCommunityIcons" name={this.state.recording ? "stop" : "microphone"} style={styles.icon} />
+                <Button icon style={ styles.recordBtn } onPressIn={() => this.toggleConvert()} onPressOut={()=> this.toggleConvert()}>
+                    <Icon type="MaterialCommunityIcons" name={this.state.recording ? "stop" : "microphone"} style={styles.recordIcon} />
                 </Button>
 
                 <Button small iconLeft bordered primary style={{ marginTop: 15, marginLeft: "50%", marginBottom: 10, left: -48 }}

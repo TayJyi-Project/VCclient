@@ -1,3 +1,7 @@
+const React = require("react-native")
+const { Dimensions } = React
+const deviceWidth = Dimensions.get("window").width
+
 export default {
     container: {
       backgroundColor: "#EAEAEA"
@@ -17,9 +21,14 @@ export default {
       backgroundColor:"red",
       marginTop: 5,
       marginLeft: "50%",
-      left: -90,
-      height: 65,
-      width: 180
+      left: deviceWidth / -4,
+      borderRadius: deviceWidth / 2,
+      height: deviceWidth / 2,
+      width: deviceWidth / 2
+    },
+    recordIcon: {
+      fontSize: 40,
+      marginLeft: (deviceWidth / 4) - 20
     },
     icon: {
       marginLeft: 80,

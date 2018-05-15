@@ -6,7 +6,6 @@ import ProgressBar from "ProgressBarAndroid"
 import * as firebase from "firebase"
 import styles from "./styles"
 
-let uuid = require("uuid/v4")
 const serverUrl = "http://140.123.97.163:5001"
 /*
 const firebaseConfig = {
@@ -154,23 +153,20 @@ class Yei extends Component {
         }
     }
 
-    async createUID() {
-        //let uid = uuid()
-        await AsyncStorage.setItem("@uid", "lu")
-        this.state.userId = await AsyncStorage.getItem("@uid")
-        console.log(this.state.userId)
-    }
-
     async componentWillMount() {
         try {
             this.state.userId = await AsyncStorage.getItem("@uid")
-            console.log(this.state.userId)
         } catch (err) {
-            await this.createUID()
+            console.log(err)
         }
 
         if (this.state.userId === null) {
-            await this.createUID()
+            Toast.show({
+                text: "請先登入後再使用",
+                buttonText: "Ok",
+                duration: 3000,
+                type: "danger"
+            })
         }
     }
 
@@ -199,12 +195,6 @@ class Yei extends Component {
         const { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING)
         if (status === "granted") {
             /* do nothing here */
-            Toast.show({
-                text: `userID: ${this.state.userId}`,
-                buttonText: "Ok",
-                textStyle: { color: "yellow" },
-                duration: 10000
-            })
         } else {
             Toast.show({
                 text: "Record Permission not granted",
@@ -429,9 +419,8 @@ class Yei extends Component {
                     </Card>
                 </Content>
                 <View style={{ position: "absolute", width: "100%", bottom: 10, paddingLeft: 10, paddingRight: 10}}>
-                    <Button full disabled={!this.state.recorded}
-                        style={[{ width: "100%"}, this.state.recorded ? {backgroundColor: "#2196f3"} : {}]}
-                        onPress={()=> this.nextItem()}>
+                    <Button full disabled={!this.state.recorded} onPress={()=> this.nextItem()}
+                        style={[{ width: "100%"}, this.state.recorded ? {backgroundColor: "#2196f3"} : {}]}>
                         <Text>{ this.state.index === this.state.sub.length ? "完成" : "下一個" }</Text>
                     </Button>
                 </View>
