@@ -1,7 +1,10 @@
 import React, { Component } from "react"
-import { Body, Left, Right, Container, Header, Button, Icon, Content, Text, Title, Card, CardItem, Toast } from "native-base"
-import { Audio, Permissions } from "expo"
+import { AsyncStorage } from "react-native"
+import { Body, Right, Container, Header, Button, Icon, Content, Text, Title, Card, CardItem, View, Toast, ProgressBar } from "native-base"
+import { Audio, FileSystem, Permissions } from "expo"
 import styles from "./styles"
+
+const serverUrl = "http://140.123.97.163:5001/"
 
 class VoiceRecord extends Component {
     constructor() {
@@ -28,7 +31,7 @@ class VoiceRecord extends Component {
             sound: [null, null, null, null, null, null, null, null, null,null]
         }
     }
-    
+
     _onPlaybackStatusUpdate = playbackStatus => {
         if (!playbackStatus.isLoaded) {
             if (playbackStatus.error) {
@@ -226,6 +229,7 @@ class VoiceRecord extends Component {
         }
     }
 
+    /*
     async uploadAudioAsync(uri) {
         const response = await fetch(uri)
         const blob = await response.blob()
@@ -234,6 +238,7 @@ class VoiceRecord extends Component {
         const snapshot = await ref.put(blob, { contentType: "audio/wav" })
         console.log(snapshot.downloadURL)
     }
+    */
 
     async uploadRecord(uri) {
         const url = `${serverUrl}/upload`

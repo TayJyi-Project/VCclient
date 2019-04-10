@@ -17,14 +17,12 @@ export default {
       textAlign: "center"
     },
     recordBtn: {
-      backgroundColor:"#F44336",
+      backgroundColor:"red",
       marginLeft: "50%",
-      left: -50,
-      width: 100,
-      height: 100
+      left: -23
     },
     icon: {
-      marginLeft: 14,
-      marginRight: 14
+      marginLeft: 11,
+      marginRight: 11
     }
   };

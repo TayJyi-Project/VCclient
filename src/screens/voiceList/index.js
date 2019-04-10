@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { AsyncStorage } from "react-native"
+import { AsyncStorage, Image } from "react-native"
 import { Body, Left, Right, Container, Header, Button, Icon, Content, Text, Title, List, ListItem } from "native-base"
 import styles from "./styles"
 
@@ -55,11 +55,62 @@ class voiceList extends Component {
                 title: "葉老師",
                 note: "帶您走入佛性的世界",
                 nav: "Yei"
+            }, {
+                tid: "kp",
+                recorded: false,
+                trained: false,
+                title: "柯文哲",
+                note: "垃圾不分藍綠",
+                nav: "Kp",
+                avatar: "https://i.imgur.com/L1CIi2l.jpg"
+            },{
+                tid: "kp2",
+                recorded: false,
+                trained: false,
+                title: "柯文哲2",
+                note: "垃圾不用回收",
+                nav: "Kp2",
+                avatar: "https://i.imgur.com/j16EyDL.jpg"
+            }, {
+                tid: "kp3",
+                recorded: false,
+                trained: false,
+                title: "柯文哲3",
+                note: "阿那個台北大巨蛋齁",
+                nav: "Kp3",
+                avatar: "https://i.imgur.com/nwwYoFN.png"
             }]
             await AsyncStorage.setItem("@preBuild", JSON.stringify(this.state.preBuild))
         } else {
             this.setState({preBuild: JSON.parse(preBuild)})
         }
+
+        if (!this.state.preBuild[3]) {
+            this.state.preBuild[3] = {
+                tid: "kp3",
+                recorded: false,
+                trained: false,
+                title: "柯文哲3",
+                note: "阿那個台北大巨蛋齁",
+                nav: "Kp3",
+                avatar: "https://i.imgur.com/nwwYoFN.png"
+            }
+            await AsyncStorage.setItem("@preBuild", JSON.stringify(this.state.preBuild))
+        }
+
+        if (!this.state.preBuild[4]) {
+            this.state.preBuild[4] = {
+                tid: "kp4",
+                recorded: false,
+                trained: false,
+                title: "柯文哲4",
+                note: "阿那個台比天巨蛋齁",
+                nav: "Kp4",
+                avatar: "https://i.imgur.com/nwwYoFN.png"
+            }
+            await AsyncStorage.setItem("@preBuild", JSON.stringify(this.state.preBuild))
+        }
+
         this.forceUpdate()
     }
     async selectVoice(type, index) {
@@ -67,10 +118,8 @@ class voiceList extends Component {
         await AsyncStorage.setItem("@selectIndex", JSON.stringify(index))
         if (this.state.preBuild[index].trained) {
             this.props.navigation.navigate("Convert")
-        } else if (type === 0) {
-            this.props.navigation.navigate(this.state.preBuild[index].nav)
-        } else if (type === 1) {
-            this.props.navigation.navigate(this.state.list[index].nav)
+        } else {
+            this.props.navigation.navigate("Note")
         }
     }
 
@@ -97,9 +146,11 @@ class voiceList extends Component {
                 </List>
                 <List style={{ backgroundColor: "#FFF" }} dataArray={this.state.preBuild} renderRow={(data, sid, index) =>
                     <ListItem thumbnail>
-                        <Left>
+                        {data.avatar ? (
+                            <Image style={{width: 60, height: 60}} source={{uri: data.avatar}} />
+                        ) : (
                             <Icon active name="star" type="MaterialCommunityIcons" style={{ color: "#27a", fontSize: 25, width: 25 }} />
-                        </Left>
+                        )}
                         <Body>
                             <Text> {data.title} {data.trained ? "[訓練完成]" : ""} </Text>
                             <Text numberOfLines={1} note> {data.note} </Text>
@@ -118,15 +169,13 @@ class voiceList extends Component {
                 </List>
                 <List style={{ backgroundColor: "#FFF" }} dataArray={this.state.list} renderRow={(data, sid, index) =>
                     <ListItem thumbnail>
-                        <Left>
-                            <Icon active name="voice" type="MaterialCommunityIcons" style={{ color: "#27a", fontSize: 25, width: 25 }} />
-                        </Left>
+                        <Icon active name="voice" type="MaterialCommunityIcons" style={{ color: "#27a", fontSize: 25, width: 25 }} />
                         <Body>
                             <Text> {data.title} {data.trained ? "[訓練完成]" : ""} </Text>
                             <Text numberOfLines={1} note> {data.note} </Text>
                         </Body>
                         <Right>
-                            <Button transparent onPress={() => this.props.navigation.navigate("Yei")}>
+                            <Button transparent onPress={() => this.props.navigation.navigate("Note")}>
                                 {data.recorded ? <Icon active name="paper-plane" /> :  <Icon active name="add" />}
                             </Button>
                         </Right>

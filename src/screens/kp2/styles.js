@@ -24,7 +24,7 @@ export default {
       height: 100
     },
     icon: {
-      marginLeft: 14,
-      marginRight: 14
+      marginLeft: 11,
+      marginRight: 11
     }
   };

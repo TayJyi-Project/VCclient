@@ -1,6 +1,6 @@
 import React, {  Component } from "react"
 import { AsyncStorage } from "react-native"
-import { View, Body, Right, Container, Header, Button, Icon, Content, Text, Title, Card, CardItem, Toast } from "native-base"
+import { View, Body, Left, Right, Container, Header, Button, Icon, Content, Text, Title, Card, CardItem, Toast } from "native-base"
 import { Audio, FileSystem, Permissions } from "expo"
 import ProgressBar from "ProgressBarAndroid"
 import * as firebase from "firebase"
@@ -156,6 +156,8 @@ class Yei extends Component {
     async componentWillMount() {
         try {
             this.state.userId = await AsyncStorage.getItem("@uid")
+            this.state.index = await AsyncStorage.getItem("@index2") || 1
+            this.state.index = parseInt(this.state.index, 10)
         } catch (err) {
             console.log(err)
         }
@@ -289,6 +291,14 @@ class Yei extends Component {
         await this.playHistory()
     }
 
+    async skip() {
+        if (this.state.index === this.state.sub.length) {
+            return
+        }
+        this.setState({index: this.state.index + 1})
+        await AsyncStorage.setItem("@index2", JSON.stringify(this.state.index))
+    }
+
     async nextItem() {
         if (!this.state.recorded) { return }
         await this.soundObject.stopAsync()
@@ -307,15 +317,17 @@ class Yei extends Component {
             duration: 1500,
             type: "success"
         })
-        //if (this.state.index === this.state.sub.length) {
-        if (this.state.index === 3) {
+        if (this.state.index === this.state.sub.length) {
+        //if (this.state.index === 3) {
             let result = JSON.parse(await AsyncStorage.getItem("@preBuild"))
             result[0].recorded = true
             result[0].trained = true
+            await AsyncStorage.setItem("@index2", "1")
             await AsyncStorage.setItem("@preBuild", JSON.stringify(result))
             this.props.navigation.navigate("VoiceList")
         } else {
             this.setState({index: this.state.index + 1})
+            await AsyncStorage.setItem("@index2", JSON.stringify(this.state.index))
             await this.setupSound()
             await this.playSound()
         }
@@ -354,6 +366,11 @@ class Yei extends Component {
         return (
             <Container style={styles.container}>
                 <Header>
+                    <Left>
+                        <Button transparent onPress={() => this.props.navigation.toggleDrawer()}>
+                            <Icon name="menu" />
+                        </Button>
+                    </Left>
                     <Body>
                         <Title>Recording</Title>
                     </Body>
@@ -364,7 +381,7 @@ class Yei extends Component {
                         <CardItem header>
                             <Text style={{ width: "100%", textAlign: "center", fontSize: 20}}>錄製聲音來源</Text>
                         </CardItem>
-                        <CardItem style={{ paddingBottom: 7 }}>
+                        <CardItem style={{ paddingTop: 0, paddingBottom: 7 }}>
                             <Text style={{ width: "100%", textAlign: "center" }}>
                                 <Text style={{fontSize: 30, color: "purple" }}>{this.state.index}</Text>
                                 / {this.state.sub.length}
@@ -396,20 +413,25 @@ class Yei extends Component {
                             <Body>
                                 {this.state.loading === false ?
                                     (<Button rounded icon style={styles.recordBtn} onPress={()=> this.record()}>
-                                        <Icon type="MaterialCommunityIcons" name="microphone" style={styles.icon} />
+                                        <Icon type="MaterialCommunityIcons" name="microphone" style={{ marginLeft: 33, fontSize: 35 }} />
                                     </Button>)
                                 :
                                     (<Button rounded icon style={styles.recordBtn} onPress={()=> this.stopRecord()}>
-                                        <Icon type="MaterialCommunityIcons" name="stop" style={styles.icon} />
+                                        <Icon type="MaterialCommunityIcons" name="stop" style={{ marginLeft: 33, fontSize: 35 }} />
                                     </Button>)
                                 }
                             </Body>
                         </CardItem>
-                        <CardItem style={{paddingTop: 0}}>
-                            <Text style={styles.centerText}>※聆聽句子後，按照原語速進行錄音{"\n"}※字幕僅供參考，請依錄音中所聽見為準</Text>
+                        <CardItem style={{paddingTop: 0, paddingBottom: 0}}>
+                            <Button small iconLeft bordered primary style={{ marginLeft: "50%", left: -50 }}
+                                onPress={()=> this.skip()}
+                            >
+                                <Icon type="MaterialCommunityIcons" name="skip-forward" />
+                                <Text>Skip</Text>
+                            </Button>
                         </CardItem>
-                        <CardItem style={{paddingTop: 0}}>
-                            <Button small iconLeft bordered primary style={{ marginLeft: "50%", left: -48 }}
+                        <CardItem style={{paddingTop: 5}}>
+                            <Button small iconLeft primary style={{ marginLeft: "50%", left: -48 }}
                                 onPress={()=> this.playHistory()}
                             >
                                 <Icon type="MaterialCommunityIcons" name="play" />

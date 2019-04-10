@@ -32,7 +32,8 @@ class Home extends Component {
         this.state = {
             login: false,
             uid: "unknown",
-            username: ""
+            username: "",
+            flag: true
         }
     }
 
@@ -40,41 +41,66 @@ class Home extends Component {
         let uid = await AsyncStorage.getItem("@uid")
         let username = await AsyncStorage.getItem("@username")
         if (uid) {
-            firebase.database().ref(`user/${uid}`).once("value").then(snapshot => {
-                this.setState({login: true, uid: snapshot.val().uid, username: username})
-                console.log(`User: ${this.state.uid}`)
-            })
+            try {
+                firebase.database().ref(`user/${uid}`).once("value").then(snapshot => {
+                    this.setState({login: true, uid: snapshot.val().uid, username: username, token: snapshot.val().token})
+                    console.log(`User: ${this.state.uid}`)
+                })
+            } catch (err) {
+                console.log(err)
+            }
         }
     }
 
     async loginGoogle() {
+        if (this.state.login === true) {
+            let result = await fetch(`https://accounts.google.com/o/oauth2/revoke?token=${this.state.token}`)
+            console.log(result)
+            this.setState({ login: false })
+            Toast.show({
+                text: "Logged Out",
+                buttonText: "Ok",
+                type: "warning",
+                duration: 1500
+            })
+            return
+        }
+
+        this.state.flag = !this.state.flag
         try {
             const result = await Google.logInAsync({
-                behavior: "web",
+                behavior: this.state.flag ? "web" : "system",
                 androidClientId: "741647084768-resif7alkjh2fc7obr7d0mf7hms959lh.apps.googleusercontent.com",
-                androidStandaloneAppClientId: "741647084768-hr8tdvgtvchgmuifs3a52mq14ilt8bqq.apps.googleusercontent.com",
-                webClientId : "741647084768-af93j6rcqaoudpgjipmiiscarqq20g83.apps.googleusercontent.com"
+                androidStandaloneAppClientId: "741647084768-p56gp7lmgqqitqo3oqlen2gojovn2ac8.apps.googleusercontent.com",
+                webClientId : "741647084768-553cdtjtf0v2h7baa1o156qft4b7dd7o.apps.googleusercontent.com"
             })
             console.log(result)
+            Toast.show({
+                text: result.type,
+                buttonText: "Ok",
+                type: "warning",
+                duration: 3000
+            })
             if (result.type === "success") {
                 await AsyncStorage.setItem("@uid", result.user.id)
                 await AsyncStorage.setItem("@username", result.user.name)
-                const credential = firebase.auth.GoogleAuthProvider.credential( result.idToken, result.accessToken);
-                firebase.auth().signInWithCredential(credential)
-                .then(user => { /*console.log(user)*/ })
-                .catch(err => { console.log(err) })
+                this.setState({login: true, uid: result.user.id, username: result.user.name})
 
-                firebase.database().ref(`user/${result.user.id}`).set({
-                    uid: result.user.id,
-                    email: result.user.email,
-                    familyName: result.user.familyName,
-                    givenName: result.user.givenName,
-                    name: result.user.name,
-                    avatar: result.user.photoUrl
-                }).catch(err => {
-                    console.log("寫入使用者資訊錯誤", err);
+                const credential = firebase.auth.GoogleAuthProvider.credential( result.idToken, result.accessToken);
+                firebase.auth().signInWithCredential(credential).then(user => {
+                    firebase.database().ref(`user/${result.user.id}`).set({
+                        uid: result.user.id,
+                        email: result.user.email,
+                        familyName: result.user.familyName,
+                        givenName: result.user.givenName,
+                        name: result.user.name,
+                        avatar: result.user.photoUrl,
+                        token: result.refreshToken
+                    }).catch(err => {
+                        console.log("寫入使用者資訊錯誤", err);
+                    })
                 })
-                this.setState({login: true, uid: result.user.id})
+                .catch(err => { console.log("Auth", err) })
 
                 Toast.show({
                     text: "Successfully login",
@@ -85,6 +111,12 @@ class Home extends Component {
             }
         } catch (err) {
             console.log("loginError", err)
+            Toast.show({
+                text: `loginError${err}`,
+                buttonText: "Ok",
+                type: "danger",
+                duration: 3000
+            })
         }
     }
 

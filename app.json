@@ -25,7 +25,13 @@
       "bundleIdentifier": "com.ecl.voiceConversion"
     },
     "android": {
-      "package": "com.ecl.voiceConversion"
+      "package": "com.ecl.voiceConversion",
+      "config": {
+        "googleSignIn": {
+          "apiKey": "AIzaSyCHVc-qW4WBIzo4PV6Lcc4KnglXpM4PY9o",
+          "certificateHash": "7B414B07DA77B4503BC661EB418AB0A9BF43F490"
+        }
+      }
     }
   }
 }

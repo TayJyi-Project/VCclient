@@ -161,8 +161,8 @@ class convert extends Component {
                 </Body>
             </Content>
             <View style={{ position: "absolute", width: "100%", bottom: 10, paddingLeft: 10, paddingRight: 10}}>
-                <View style={{ borderBottomColor: "grey", borderBottomWidth: 1, marginBottom: 30, marginLeft: 10, marginRight: 10 }} />
-                <Button icon style={ styles.recordBtn } onPressIn={() => this.toggleConvert()} onPressOut={()=> this.toggleConvert()}>
+                <View style={{ borderBottomColor: "grey", borderBottomWidth: 1, marginBottom: 30, marginLeft: 15, marginRight: 15 }} />
+                <Button icon style={ [styles.recordBtn, this.state.recording ? styles.recordingBtnPress : {}] } onPressIn={() => this.toggleConvert()} onPressOut={()=> this.toggleConvert()}>
                     <Icon type="MaterialCommunityIcons" name={this.state.recording ? "stop" : "microphone"} style={styles.recordIcon} />
                 </Button>
 

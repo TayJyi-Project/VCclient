@@ -18,13 +18,16 @@ export default {
       textAlign: "center"
     },
     recordBtn: {
-      backgroundColor:"red",
+      backgroundColor:"#D32F2F",
       marginTop: 5,
       marginLeft: "50%",
       left: deviceWidth / -4,
       borderRadius: deviceWidth / 2,
       height: deviceWidth / 2,
       width: deviceWidth / 2
+    },
+    recordBtnPress: {
+      backgroundColor:"#B71C1C"
     },
     recordIcon: {
       fontSize: 40,
